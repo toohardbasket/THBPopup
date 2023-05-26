@@ -24,27 +24,34 @@ enum THBPopupStyle {
     case checkmark(sourceViewId: String, namespace: Namespace.ID)
 }
 
-struct THBPopupView: View {
+public struct THBPopupView: View {
     
-    @ViewBuilder
-    private func popupViewContent(style: THBPopupStyle) -> some View {
-        switch style {
-        case .checkmark(let sourceViewId, let namespace):
-            THBCheckmarkPopupViewContent(sourceViewId: sourceViewId, namespace: namespace)
-        }
-    }
-    
-    @EnvironmentObject var configuration: THBPopupConfiguration
+    @ObservedObject var configuration: THBPopupConfiguration
 
     var shouldTransition: Binding<Bool>
     var sourceViewId: Binding<String?>
     let namespace: Namespace.ID
     
-    var body: some View {
+    public init(configuration: THBPopupConfiguration, shouldTransition: Binding<Bool>, sourceViewId: Binding<String?>, namespace: Namespace.ID) {
+        self.shouldTransition = shouldTransition
+        self.sourceViewId = sourceViewId
+        self.namespace = namespace
+        self.configuration = configuration
+    }
+    
+    @ViewBuilder
+    private func popupViewContent(configuration: THBPopupConfiguration, style: THBPopupStyle) -> some View {
+        switch style {
+        case .checkmark(let sourceViewId, let namespace):
+            THBCheckmarkPopupViewContent(configuration: configuration, sourceViewId: sourceViewId, namespace: namespace)
+        }
+    }
+    
+    public var body: some View {
         
         if shouldTransition.wrappedValue, let id = sourceViewId.wrappedValue {
             Color.clear.overlay(
-                popupViewContent(style: .checkmark(sourceViewId: id, namespace: namespace))
+                popupViewContent(configuration: configuration, style: .checkmark(sourceViewId: id, namespace: namespace))
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             withAnimation {

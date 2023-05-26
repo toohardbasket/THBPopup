@@ -9,7 +9,7 @@ import SwiftUI
 
 struct THBCheckmarkPopupViewContent: View {
     
-    @EnvironmentObject var configuration: THBPopupConfiguration
+    @ObservedObject var configuration: THBPopupConfiguration
     var sourceViewId: String
     let namespace: Namespace.ID
     
