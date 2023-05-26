@@ -19,6 +19,18 @@ import SwiftUI
 /// Pass those state vars as binding to any child views that need to use them.
 ///
 ///
+///
+
+extension View {
+    @ViewBuilder func `ifBackgroundMaterialExists`<Content: View>(_ optional: (any ShapeStyle)?, modifier: (Self, Material) -> Content) -> some View {
+        if let unwrapped = optional as? Material {
+            modifier(self, unwrapped)
+        }
+        else {
+            self
+        }
+    }
+}
 
 enum THBPopupStyle {
     case checkmark(sourceViewId: String, namespace: Namespace.ID)
@@ -26,24 +38,23 @@ enum THBPopupStyle {
 
 public struct THBPopupView: View {
     
-    @ObservedObject var configuration: THBPopupConfiguration
+    @EnvironmentObject var configuration: THBPopupConfiguration
 
     var shouldTransition: Binding<Bool>
     var sourceViewId: Binding<String?>
     let namespace: Namespace.ID
     
-    public init(configuration: THBPopupConfiguration, shouldTransition: Binding<Bool>, sourceViewId: Binding<String?>, namespace: Namespace.ID) {
+    public init(shouldTransition: Binding<Bool>, sourceViewId: Binding<String?>, namespace: Namespace.ID) {
         self.shouldTransition = shouldTransition
         self.sourceViewId = sourceViewId
         self.namespace = namespace
-        self.configuration = configuration
     }
     
     @ViewBuilder
-    private func popupViewContent(configuration: THBPopupConfiguration, style: THBPopupStyle) -> some View {
+    private func popupViewContent(style: THBPopupStyle) -> some View {
         switch style {
         case .checkmark(let sourceViewId, let namespace):
-            THBCheckmarkPopupViewContent(configuration: configuration, sourceViewId: sourceViewId, namespace: namespace)
+            THBCheckmarkPopupViewContent(sourceViewId: sourceViewId, namespace: namespace)
         }
     }
     
@@ -51,9 +62,10 @@ public struct THBPopupView: View {
         
         if shouldTransition.wrappedValue, let id = sourceViewId.wrappedValue {
             Color.clear.overlay(
-                popupViewContent(configuration: configuration, style: .checkmark(sourceViewId: id, namespace: namespace))
+                popupViewContent(style: .checkmark(sourceViewId: id, namespace: namespace))
+                    .environmentObject(configuration)
                     .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + configuration.dismissalDelay) {
                             withAnimation {
                                 shouldTransition.wrappedValue = false
                                 sourceViewId.wrappedValue = nil
@@ -61,7 +73,9 @@ public struct THBPopupView: View {
                         }
                     }
             )
-            .background(.ultraThinMaterial)
+            .ifBackgroundMaterialExists(configuration.backgroundStyle, modifier: { view, style in
+                view.background(style)
+            })
             .zIndex(3)
         }
     }

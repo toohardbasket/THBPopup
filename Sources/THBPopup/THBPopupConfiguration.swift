@@ -9,10 +9,9 @@ import SwiftUI
 
 public class THBPopupConfiguration: ObservableObject {
     
-    var titleTextColor: Color = .black
+    public static let `default` = THBPopupConfiguration()
     
-    public init(titleTextColor: Color = .black) {
-        self.titleTextColor = titleTextColor
-    }
-    
+    public var titleTextColor: Color = .black
+    public var dismissalDelay: Double = 2
+    public var backgroundStyle: (any ShapeStyle)? = .ultraThinMaterial
 }
