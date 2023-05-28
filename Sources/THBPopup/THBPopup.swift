@@ -20,6 +20,10 @@ import SwiftUI
 ///
 ///
 ///
+/// Problems:
+/// `Multiple inserted views in matched geometry group Pair<String, ID>(first: "add-event.toolbar", second: SwiftUI.Namespace.ID(id: 100)) have `isSource: true`, results are undefined.
+/// When I fix this by either making sure one of the views is isSouce=false, or that one is always not inserted, the animation doesn't work properly`
+///
 
 extension View {
     @ViewBuilder func `ifBackgroundMaterialExists`<Content: View>(_ optional: (any ShapeStyle)?, modifier: (Self, Material) -> Content) -> some View {
