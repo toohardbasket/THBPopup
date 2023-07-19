@@ -11,7 +11,7 @@ public class THBPopupConfiguration: ObservableObject {
     
     public static let `default` = THBPopupConfiguration()
     
-    public var titleTextColor: Color = .black
+    /// Set to 0 for dialogs
     public var dismissalDelay: Double = 2
     public var backgroundStyle: (any ShapeStyle)? = .ultraThinMaterial
 }
