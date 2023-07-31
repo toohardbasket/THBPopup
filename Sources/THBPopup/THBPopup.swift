@@ -7,14 +7,6 @@
 
 import SwiftUI
 
-
-
-///
-/// Problems:
-/// `Multiple inserted views in matched geometry group Pair<String, ID>(first: "add-event.toolbar", second: SwiftUI.Namespace.ID(id: 100)) have `isSource: true`, results are undefined.
-/// When I fix this by either making sure one of the views is isSouce=false, or that one is always not inserted, the animation doesn't work properly`
-///
-
 extension View {
     @ViewBuilder func `ifBackgroundMaterialExists`<Content: View>(_ optional: (any ShapeStyle)?, modifier: (Self, Material) -> Content) -> some View {
         if let unwrapped = optional as? Material {
@@ -28,14 +20,14 @@ extension View {
 
 public struct THBPopupView<Content: View>: View {
         
-    @EnvironmentObject var configuration: THBPopupConfiguration
-
+    public var configuration: THBPopupConfiguration
     public var shouldTransition: Binding<Bool>
     public var sourceViewId: Binding<String?>
     public var namespace: Namespace.ID
     @ViewBuilder public var content: (String, Namespace.ID) -> Content
     
-    public init(shouldTransition: Binding<Bool>, sourceViewId: Binding<String?>, namespace: Namespace.ID, @ViewBuilder content: @escaping (String, Namespace.ID) -> Content) {
+    public init(configuration: THBPopupConfiguration, shouldTransition: Binding<Bool>, sourceViewId: Binding<String?>, namespace: Namespace.ID, @ViewBuilder content: @escaping (String, Namespace.ID) -> Content) {
+        self.configuration = configuration
         self.shouldTransition = shouldTransition
         self.sourceViewId = sourceViewId
         self.namespace = namespace
@@ -47,7 +39,6 @@ public struct THBPopupView<Content: View>: View {
         if shouldTransition.wrappedValue, let id = sourceViewId.wrappedValue {
             Color.clear.overlay(
                 content(id, namespace)
-                    .environmentObject(configuration)
                     .onAppear {
                         if configuration.dismissalDelay > 0 {
                             DispatchQueue.main.asyncAfter(deadline: .now() + configuration.dismissalDelay) {

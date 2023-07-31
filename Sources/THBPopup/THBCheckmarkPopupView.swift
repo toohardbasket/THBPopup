@@ -9,13 +9,11 @@ import SwiftUI
 
 public struct THBCheckmarkPopupView: View {
     
-    public var configuration: THBPopupConfiguration
     public var sourceViewId: String
     public let namespace: Namespace.ID
     public var color: Color
 
-    public init(configuration: THBPopupConfiguration, sourceViewId: String, namespace: Namespace.ID, color: Color) {
-        self.configuration = configuration
+    public init(sourceViewId: String, namespace: Namespace.ID, color: Color) {
         self.sourceViewId = sourceViewId
         self.namespace = namespace
         self.color = color
