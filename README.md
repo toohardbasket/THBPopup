@@ -10,7 +10,8 @@ As yet untested with other platforms, but does work with iOS17 beta.
 
 ## Usage
 
-Place a `THBPopupView` as the top item in a ZStack. Control its presentation with the `shouldTransition` binding. The `sourceViewId` is the ID of the presenting view. You don't have to use this, but the hero transition won't work otherwise. 
+Place a `THBPopupView` as the top item in a ZStack. Control its presentation with the `shouldTransition` binding. The `sourceViewId` is the ID of the presenting view. This, and the namespace ID are passed to the viewbuilder here so that you can use them in a parent view and trigger them from a child view, but you can ignore them if the presentation and definition are all happening within the same containing view.
+You can get as complex as you want with the transition by transitioning between more views at once - simply define all these in the popover content, and ignore the main ID passed to the viewbuilder.
 
 Configure the view with a `THBPopupConfiguration`. Currently this only has two parameters - the dismissal delay, and the background.
 
